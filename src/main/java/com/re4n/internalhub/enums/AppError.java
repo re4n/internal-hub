@@ -6,7 +6,9 @@ public enum AppError {
 
     RESOURCE_NOT_FOUND("IHBC-E200", "The parameter being searched doesn't exist."),
     DUPLICATE_IDENTITY("IHBC-E201", "The email already exists."),
-    VALIDATION_FAILED("IHBC-E202", "The access level is outside the permitted range.");
+    VALIDATION_FAILED("IHBC-E202", "The access level is outside the permitted range."),
+
+    INVALID_CREDENTIALS("IHAC-E300", "Incorrect username or password.");
 
 
     private final String code;
