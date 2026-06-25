@@ -2,27 +2,25 @@ package com.re4n.internalhub.model;
 
 import com.re4n.internalhub.enums.Department;
 
-import java.time.LocalDate;
-
 public class Role {
     private Long id;
     private String roleName;
     private Department department;
     private Integer accessLevel;
-    private Double salary;
+    private Double minSalary;
+    private Double maxSalary;
     private String description;
-    private LocalDate creationDate;
 
     public Role(){}
 
-    public Role(Long id, String roleName, Department department, Integer accessLevel, Double salary, String description, LocalDate creationDate) {
+    public Role(Long id, String roleName, Department department, Integer accessLevel, Double minSalary, Double maxSalary, String description) {
         this.id = id;
         this.roleName = roleName;
         this.department = department;
         this.accessLevel = accessLevel;
-        this.salary = salary;
+        this.minSalary = minSalary;
+        this.maxSalary = maxSalary;
         this.description = description;
-        this.creationDate = creationDate;
     }
 
     public Long getId() {return id;}
@@ -37,12 +35,12 @@ public class Role {
     public Integer getAccessLevel() {return accessLevel;}
     public void setAccessLevel(Integer accessLevel) {this.accessLevel = accessLevel;}
 
-    public Double getSalary() {return salary;}
-    public void setSalary(Double salary) {this.salary = salary;}
+    public Double getMinSalary() {return minSalary;}
+    public void setMinSalary(Double minSalary) {this.minSalary = minSalary;}
+
+    public Double getMaxSalary() {return maxSalary;}
+    public void setMaxSalary(Double maxSalary) {this.maxSalary = maxSalary;}
 
     public String getDescription() {return description;}
     public void setDescription(String description) {this.description = description;}
-
-    public LocalDate getCreationDate() {return creationDate;}
-    public void setCreationDate(LocalDate creationDate) {this.creationDate = creationDate;}
 }
