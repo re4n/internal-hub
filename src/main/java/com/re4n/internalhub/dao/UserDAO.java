@@ -1,5 +1,6 @@
 package com.re4n.internalhub.dao;
 
+import com.re4n.internalhub.enums.Department;
 import com.re4n.internalhub.enums.WorkModel;
 import com.re4n.internalhub.model.User;
 
@@ -11,12 +12,12 @@ import java.time.LocalDate;
 public class UserDAO extends BaseDAO<User>{
     @Override
     protected String getInsertSql() {
-        return "INSERT INTO users (first_name, last_name, corporate_email, personal_email, salary, work_model, hire_date, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        return "INSERT INTO users (first_name, last_name, corporate_email, personal_email, salary, department, work_model, hire_date, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     }
 
     @Override
     protected String getUpdateSql() {
-        return "UPDATE users SET first_name = ?, last_name = ?, corporate_email = ?, personal_email = ?, salary = ?, work_model = ?, hire_date = ?, is_active = ? WHERE id = ?";
+        return "UPDATE users SET first_name = ?, last_name = ?, corporate_email = ?, personal_email = ?, salary = ?, department = ?, work_model = ?, hire_date = ?, is_active = ? WHERE id = ?";
     }
 
     @Override
@@ -45,6 +46,7 @@ public class UserDAO extends BaseDAO<User>{
         user.setCorporateEmail(rs.getString("corporate_email"));
         user.setPersonalEmail(rs.getString("personal_email"));
         user.setSalary(rs.getBigDecimal("salary"));
+        user.setDepartment(Department.valueOf(rs.getString("department")));
         user.setWorkModel(WorkModel.valueOf(rs.getString("work_model")));
         user.setHireDate(rs.getObject("hire_date", LocalDate.class));
         user.setActive(rs.getBoolean("is_active"));
@@ -59,14 +61,15 @@ public class UserDAO extends BaseDAO<User>{
         stmt.setString(3, entity.getCorporateEmail());
         stmt.setString(4, entity.getPersonalEmail());
         stmt.setBigDecimal(5, entity.getSalary());
-        stmt.setString(6, entity.getWorkModel().name());
-        stmt.setObject(7, entity.getHireDate());
-        stmt.setBoolean(8, entity.getActive());
+        stmt.setString(6, entity.getDepartment().name());
+        stmt.setString(7, entity.getWorkModel().name());
+        stmt.setObject(8, entity.getHireDate());
+        stmt.setBoolean(9, entity.getActive());
     }
 
     @Override
     protected void bindUpdateParameters(PreparedStatement stmt, User entity) throws SQLException {
         bindSaveParameters(stmt, entity);
-        stmt.setLong(9, entity.getId());
+        stmt.setLong(10, entity.getId());
     }
 }

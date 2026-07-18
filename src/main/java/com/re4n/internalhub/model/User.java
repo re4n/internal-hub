@@ -1,5 +1,6 @@
 package com.re4n.internalhub.model;
 
+import com.re4n.internalhub.enums.Department;
 import com.re4n.internalhub.enums.WorkModel;
 
 import java.math.BigDecimal;
@@ -13,6 +14,7 @@ public class User {
     private String corporateEmail;
     private String personalEmail;
     private BigDecimal salary;
+    private Department department;
     private WorkModel workModel = WorkModel.ONSITE;
     private LocalDate hireDate;
     private Boolean isActive = true;
@@ -21,7 +23,7 @@ public class User {
 
     public User(){}
 
-    public User(Long id, String employeeId, String firstName, String lastName, String corporateEmail, String personalEmail, BigDecimal salary, WorkModel workModel, LocalDate hireDate, Boolean isActive, Long roleId) {
+    public User(Long id, String employeeId, String firstName, String lastName, String corporateEmail, String personalEmail, BigDecimal salary, Department department, WorkModel workModel, LocalDate hireDate, Boolean isActive, Long roleId) {
         this.id = id;
         this.employeeId = employeeId;
         this.firstName = firstName;
@@ -29,6 +31,7 @@ public class User {
         this.corporateEmail = corporateEmail;
         this.personalEmail = personalEmail;
         this.salary = salary;
+        this.department = department;
         this.workModel = workModel;
         this.hireDate = hireDate;
         this.isActive = isActive;
@@ -56,6 +59,9 @@ public class User {
 
     public BigDecimal getSalary() {return salary;}
     public void setSalary(BigDecimal salary) {this.salary = salary;}
+
+    public Department getDepartment() {return department;}
+    public void setDepartment(Department department) {this.department = department;}
 
     public WorkModel getWorkModel() {return workModel;}
     public void setWorkModel(WorkModel workModel) {this.workModel = workModel;}
