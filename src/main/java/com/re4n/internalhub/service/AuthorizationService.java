@@ -13,41 +13,33 @@ public class AuthorizationService {
     }
 
     public boolean canCreateUser(User actor){
-        if(actor.getRoleId() == null){return false;}
-        Role actorRole = roleDAO.findById(actor.getRoleId());
-        if(actorRole == null){return false;}
-        RoleType actorType = actorRole.getRoleType();
+        RoleType actorType = resolveActorType(actor);
+        if (actorType == null){return false;}
 
         if(actorType == RoleType.HR) {return true;}
         return false;
     }
 
     public boolean canDisableUser(User actor, User target){
-        if(actor.getRoleId() == null){return false;}
-        Role actorRole = roleDAO.findById(actor.getRoleId());
-        if(actorRole == null){return false;}
-        RoleType actorType = actorRole.getRoleType();
+        RoleType actorType = resolveActorType(actor);
+        if (actorType == null){return false;}
 
         if(actorType == RoleType.HR && !actor.getId().equals(target.getId())) {return true;}
         return false;
     }
 
     public boolean canManageRoles(User actor){
-        if(actor.getRoleId() == null){return false;}
-        Role actorRole = roleDAO.findById(actor.getRoleId());
-        if(actorRole == null){return false;}
-        RoleType actorType = actorRole.getRoleType();
+        RoleType actorType = resolveActorType(actor);
+        if (actorType == null){return false;}
 
         if(actorType == RoleType.ADMIN){ return true;}
         return false;
     }
 
     public boolean canAssignRole(User actor, User target, RoleType roleToAssign){
-        if(actor.getRoleId() == null){return false;}
-        if(actor.getId().equals(target.getId())) {return false;}
-        Role actorRole = roleDAO.findById(actor.getRoleId());
-        if(actorRole == null){return false;}
-        RoleType actorType = actorRole.getRoleType();
+        RoleType actorType = resolveActorType(actor);
+        if (actorType == null){return false;}
+        if(actor.getId().equals(target.getId())) return false;
         if(roleToAssign == RoleType.ADMIN && actorType == RoleType.ADMIN) {return true;}
         if(roleToAssign != RoleType.ADMIN){
             return actorType == RoleType.ADMIN || actorType == RoleType.HR;
@@ -56,10 +48,8 @@ public class AuthorizationService {
     }
 
     public boolean canReadUser(User actor, User target){
-        if (actor.getRoleId() == null){return false;}
-        Role actorRole = roleDAO.findById(actor.getRoleId());
-        if(actorRole == null){return false;}
-        RoleType actorType = actorRole.getRoleType();
+        RoleType actorType = resolveActorType(actor);
+        if (actorType == null){return false;}
 
         if(actor.getId().equals(target.getId())){return true;}
         if(actorType == RoleType.ADMIN || actorType == RoleType.HR){return true;}
@@ -67,17 +57,17 @@ public class AuthorizationService {
         return false;
     }
     public boolean canUpdateSalary(User actor, User target){
-        if (actor.getRoleId() == null){return false;}
-        Role actorRole = roleDAO.findById(actor.getRoleId());
-        if(actorRole == null){return false;}
-        RoleType actorType = actorRole.getRoleType();
-
+        RoleType actorType = resolveActorType(actor);
+        if (actorType == null){return false;}
         if (actor.getId().equals(target.getId())){return false;}
         if(actorType == RoleType.HR){return true;}
         return false;
     }
 
-//    private RoleType resolveActorType(User actor){
-//      REFATORAR DEPOIS!!
-//    }
+   private RoleType resolveActorType(User actor){
+       if (actor.getRoleId() == null){return null;}
+       Role actorRole = roleDAO.findById(actor.getRoleId());
+       if(actorRole == null){return null;}
+       return actorRole.getRoleType();
+ }
 }
