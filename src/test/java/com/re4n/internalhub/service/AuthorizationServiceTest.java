@@ -89,7 +89,7 @@ public class AuthorizationServiceTest {
 
         boolean result = service.canReadUser(actor, actor);
 
-        assertTrue(result, "You cannot view other users' profiles.");
+        assertTrue(result, "You cannot view other users's profiles.");
     }
 
     private Role createRole(Long id, RoleType type){

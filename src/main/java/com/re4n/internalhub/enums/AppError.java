@@ -8,7 +8,8 @@ public enum AppError {
     DUPLICATE_IDENTITY("IHBC-E201", "The email already exists."),
     VALIDATION_FAILED("IHBC-E202", "The access level is outside the permitted range."),
 
-    INVALID_CREDENTIALS("IHAC-E300", "Incorrect username or password.");
+    INVALID_CREDENTIALS("IHAC-E300", "Incorrect username or password."),
+    AUTHORIZATION_DENIED("IHAC-E301", "Insufficient permissions to access the requested resource.");
 
 
     private final String code;
