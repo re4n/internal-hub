@@ -13,12 +13,12 @@ public class AppException extends RuntimeException {
         this.incidentId = java.util.UUID.randomUUID().toString().substring(0,8);
     }
 
-    public String getMessage(){
-        return "ERROR: " +errorType.getCode() + " | Incident ID: " + incidentId;
+    public AppError getErrorType() {return errorType;}
+
+    public String getIncidentId(){ return incidentId;}
+
+    public String getUserMessage(){
+        return "ERROR: " + incidentId + " Contact an Admin";
     }
 
-    @Override
-    public String toString() {
-        return getMessage() + " - " + getMessage();
-    }
 }

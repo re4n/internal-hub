@@ -1,6 +1,8 @@
 package com.re4n.internalhub.dao;
 
 import com.re4n.internalhub.config.DbConnection;
+import com.re4n.internalhub.enums.AppError;
+import com.re4n.internalhub.exception.AppException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,7 +34,10 @@ public abstract class BaseDAO<T> implements GenericDAO<T> {
             bindSaveParameters(stmt, entity);
             stmt.executeUpdate();
         }catch (SQLException e){
-            System.err.println("[ERROR] - " + e.getMessage());
+            if(e.getErrorCode() == 1062){
+                throw new AppException(AppError.DUPLICATE_IDENTITY, e);
+            }
+            throw new AppException(AppError.DB_PERSISTENCE_VIOLATION, e);
         }
     }
 

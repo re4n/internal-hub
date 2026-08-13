@@ -9,7 +9,7 @@ public class Main {
 
         System.out.println(randomNumber);
 
-        String randomEmail =  generator.genEmployeeCorporateEmail("Lucas", "Silva");
+        String randomEmail =  generator.genEmployeeCorporateEmail("Lucas", "Silva", 23);
 
         System.out.println(randomEmail);
 
