@@ -50,7 +50,10 @@ public abstract class BaseDAO<T> implements GenericDAO<T> {
             bindUpdateParameters(stmt, entity);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            System.err.println("[ERROR] - " + e.getMessage());
+            if(e.getErrorCode() == 1062){
+                throw new AppException(AppError.DUPLICATE_IDENTITY, e);
+            }
+            throw new AppException(AppError.DB_PERSISTENCE_VIOLATION, e);
         }
     }
 
@@ -60,18 +63,10 @@ public abstract class BaseDAO<T> implements GenericDAO<T> {
 
         try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)){
-
             stmt.setLong(1, id);
-
-            int affectedRows = stmt.executeUpdate();
-
-            if(affectedRows > 0){
-                System.out.println("Success!");
-            }else{
-                System.out.println("Fail! ");
-            }
+            stmt.executeUpdate();
         }catch(SQLException e){
-            System.err.println("[ERROR] - " + e.getMessage());
+            throw new AppException(AppError.FOREIGN_KEY_VIOLATION, e);
         }
     }
 
@@ -90,7 +85,7 @@ public abstract class BaseDAO<T> implements GenericDAO<T> {
                 }
             }
         }catch (SQLException e){
-            System.err.println("[ERROR] - " + e.getMessage());
+            throw new AppException(AppError.DB_PERSISTENCE_VIOLATION, e);
         }
         return entity;
     }
@@ -110,7 +105,7 @@ public abstract class BaseDAO<T> implements GenericDAO<T> {
                 }
             }
         }catch (SQLException e){
-            System.err.println("[ERROR] - " + e.getMessage());
+            throw new AppException(AppError.DB_PERSISTENCE_VIOLATION, e);
         }
         return entityList;
     }

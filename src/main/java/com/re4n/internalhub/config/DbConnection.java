@@ -1,5 +1,8 @@
 package com.re4n.internalhub.config;
 
+import com.re4n.internalhub.enums.AppError;
+import com.re4n.internalhub.exception.AppException;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -16,9 +19,9 @@ public class DbConnection {
             Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(URL,USER,PWD);
         } catch (ClassNotFoundException e) {
-            throw new SQLException("Driver MySQL not found!", e);
+            throw new AppException(AppError.DB_DRIVER_NOT_FOUND, e);
         }catch (SQLException e){
-            throw new SQLException("Failed to connect!" + e.getMessage());
+            throw new AppException(AppError.DB_CONNECTION_FAILED, e);
         }
     }
 }
