@@ -12,7 +12,7 @@ import java.time.LocalDate;
 public class UserDAO extends BaseDAO<User>{
     @Override
     protected String getInsertSql() {
-        return "INSERT INTO users (first_name, last_name, corporate_email, personal_email, salary, department, work_model, hire_date, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        return "INSERT INTO users (employee_id, first_name, last_name, corporate_email, personal_email, salary, department, work_model, hire_date, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     }
 
     @Override
@@ -56,15 +56,16 @@ public class UserDAO extends BaseDAO<User>{
 
     @Override
     protected void bindSaveParameters(PreparedStatement stmt, User entity) throws SQLException {
-        stmt.setString(1, entity.getFirstName());
-        stmt.setString(2, entity.getLastName());
-        stmt.setString(3, entity.getCorporateEmail());
-        stmt.setString(4, entity.getPersonalEmail());
-        stmt.setBigDecimal(5, entity.getSalary());
-        stmt.setString(6, entity.getDepartment().name());
-        stmt.setString(7, entity.getWorkModel().name());
-        stmt.setObject(8, entity.getHireDate());
-        stmt.setBoolean(9, entity.getActive());
+        stmt.setString(1, entity.getEmployeeId());
+        stmt.setString(2, entity.getFirstName());
+        stmt.setString(3, entity.getLastName());
+        stmt.setString(4, entity.getCorporateEmail());
+        stmt.setString(5, entity.getPersonalEmail());
+        stmt.setBigDecimal(6, entity.getSalary());
+        stmt.setString(7, entity.getDepartment().name());
+        stmt.setString(8, entity.getWorkModel().name());
+        stmt.setObject(9, entity.getHireDate());
+        stmt.setBoolean(10, entity.getActive());
     }
 
     @Override

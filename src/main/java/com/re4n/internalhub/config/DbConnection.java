@@ -12,7 +12,7 @@ public class DbConnection {
 
     private static final String URL = System.getenv("DB_URL") != null ? System.getenv("DB_URL") : DEFAULT_URL;
     private static final String USER = System.getenv("DB_USER") != null ? System.getenv("DB_USER") : "root";
-    private static final String PWD = System.getenv("DB_PWD") != null ? System.getenv("DB_PWD") : "";
+    private static final String PWD = System.getenv("DB_PWD") != null ? System.getenv("DB_PWD") : ".";
 
     public static Connection createConnection() throws SQLException {
         try {
