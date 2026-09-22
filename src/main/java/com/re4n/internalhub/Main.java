@@ -15,7 +15,7 @@ public class Main {
         UserDAO userDAO = new UserDAO();
         CredentialGenerator generator = new CredentialGenerator();
         AuthorizationService authService = new AuthorizationService(roleDAO);
-        UserService userService = new UserService(userDAO, authService, generator);
+        UserService userService = new UserService(userDAO, roleDAO, authService, generator);
 
         User actor = userDAO.findById(1L);
 
