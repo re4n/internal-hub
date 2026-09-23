@@ -28,8 +28,9 @@ Resolving the user's security context requires fetching information from two dis
 | **UPDATE_SALARY** | Denied | Denied | Allowed<br>*Contractual adjustment logic delegated to HR.* | Denied<br>*Segregation of Duties (SoD); IT administration does not modify payroll.* |
 | **ASSIGN_ROLE** | Denied | Denied | Conditional<br>*Allowed only to assign EMPLOYEE, MANAGER, and HR.* | Conditional<br>*The only role authorized to grant or revoke ADMIN privileges.* |
 | **CREATE_USER** | Denied | Denied | Allowed<br>*Formal onboarding and corporate hiring process.* | Denied<br>*Segregation of Duties (SoD); the ADMIN manages infrastructure, not employee intake.* |
-| **DISABLE_USER** | Denied | Denied | Allowed<br>*Except for themselves.* | Denied<br>*Prevines the risk of accidental or intentional record purging by infrastructure operators.* |
-| **MANAGE_ROLES** | Denied | Denied | Denied<br>*Parameterization of salary ranges (min/max_salary) requires IT governance and ADMIN.* | Allowed<br>*Data infrastructure maintenance and enforcement of system business rules.* |
+| **DISABLE_USER** | Denied | Denied | Allowed<br>*Except for themselves.* | Denied<br>*Prevents the risk of accidental or intentional record purging by infrastructure operators.* |
+| **MANAGE_ROLES** | Denied | Denied | Denied<br>*Parameterization of salary ranges (min/max_salary) requires ADMIN.* | Allowed<br>*Data infrastructure maintenance and enforcement of system business rules.* |
+| **READ_ROLES** | Denied | Denied | Allowed<br>*HR must view roles to assign them to users.* | Allowed<br>*Full visibility over role definitions and salary ranges.* |
 | **CHANGE_OWN_ACCESS** | Denied | Denied | Denied | Denied<br>*Universally blocked to prevent the risk of self-promotion and fraud.* |
 
 ## 5. Fail-Closed Principle
