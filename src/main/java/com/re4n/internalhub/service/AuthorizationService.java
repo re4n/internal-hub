@@ -28,11 +28,19 @@ public class AuthorizationService {
         return false;
     }
 
-    public boolean canManageRoles(User actor){
+    public boolean canManageRole(User actor){
         RoleType actorType = resolveActorType(actor);
         if (actorType == null){return false;}
 
         if(actorType == RoleType.ADMIN){ return true;}
+        return false;
+    }
+
+    public boolean canReadRole(User actor){
+        RoleType actorType = resolveActorType(actor);
+        if (actorType == null){return false;}
+
+        if(actorType == RoleType.ADMIN || actorType == RoleType.HR){return true;}
         return false;
     }
 

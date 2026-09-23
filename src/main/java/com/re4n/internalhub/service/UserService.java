@@ -67,6 +67,18 @@ public class UserService {
 
     }
 
+    public List<User> findAllUsers(User actor){
+        List<User> allUsers = userDAO.findAll();
+        List<User> visibleUsers = new ArrayList<>();
+
+        for(User u: allUsers){
+            if(authService.canReadUser(actor, u)){
+                visibleUsers.add(u);
+            }
+        }
+        return visibleUsers;
+    }
+
     public User disableUser(User actor, Long targetId) {
         User target = userDAO.findById(targetId);
         if (target == null){
@@ -127,18 +139,5 @@ public class UserService {
         userDAO.update(target);
         return target;
     }
-
-    public List<User> findAllUsers(User actor){
-        List<User> allUsers = userDAO.findAll();
-        List<User> visibleUsers = new ArrayList<>();
-
-        for(User u: allUsers){
-            if(authService.canReadUser(actor, u)){
-                visibleUsers.add(u);
-            }
-        }
-        return visibleUsers;
-    }
-
 
 }
