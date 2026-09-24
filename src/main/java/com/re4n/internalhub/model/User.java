@@ -12,6 +12,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String corporateEmail;
+    private String passwordHash;
     private String personalEmail;
     private BigDecimal salary;
     private Department department;
@@ -23,12 +24,16 @@ public class User {
 
     public User(){}
 
-    public User(Long id, String employeeId, String firstName, String lastName, String corporateEmail, String personalEmail, BigDecimal salary, Department department, WorkModel workModel, LocalDate hireDate, Boolean isActive, Long roleId) {
+    public User(Long id, String employeeId, String firstName, String lastName,
+                String corporateEmail, String passwordHash, String personalEmail, BigDecimal salary,
+                Department department, WorkModel workModel, LocalDate hireDate,
+                Boolean isActive, Long roleId) {
         this.id = id;
         this.employeeId = employeeId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.corporateEmail = corporateEmail;
+        this.passwordHash = passwordHash;
         this.personalEmail = personalEmail;
         this.salary = salary;
         this.department = department;
@@ -52,6 +57,9 @@ public class User {
 
     public String getCorporateEmail() {return corporateEmail;}
     public void setCorporateEmail(String corporateEmail) {this.corporateEmail = corporateEmail;}
+
+    public String getPasswordHash() {return passwordHash;}
+    public void setPasswordHash(String passwordHash) {this.passwordHash = passwordHash;}
 
     public String getPersonalEmail() {return personalEmail;}
 

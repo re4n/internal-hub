@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     corporate_email VARCHAR(250) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
     personal_email VARCHAR(250) NOT NULL UNIQUE,
     salary DECIMAL(10,2),
     department ENUM('ENGINEERING', 'IT', 'PRODUCT', 'SUPPORT', 'HR', 'FINANCE') NOT NULL,
