@@ -35,6 +35,17 @@ public class RoleService {
             return newRole;
         }
 
+        public void deleteRole(User actor, Long roleId){
+            if(!authService.canManageRole(actor)){
+                throw new AppException(AppError.AUTHORIZATION_DENIED, null);
+            }
+            Role target = roleDAO.findById(roleId);
+            if(target == null){
+                throw new AppException(AppError.RESOURCE_NOT_FOUND, null);
+            }
+            roleDAO.delete(roleId);
+        }
+
     public Role findRole(User actor, Long targetId){
         if(!authService.canReadRole(actor)){
             throw new AppException(AppError.AUTHORIZATION_DENIED, null);
