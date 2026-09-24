@@ -21,7 +21,7 @@ public class AuthorizationServiceTest {
 
         boolean result = service.canUpdateSalary(actor, target);
 
-        assertFalse(result, "HR doesn't update its own salaries.");
+        assertFalse(result, "HR must not update their own salary");
     }
 
     @Test
@@ -35,7 +35,7 @@ public class AuthorizationServiceTest {
 
         boolean result = service.canAssignRole(actor, target, RoleType.ADMIN);
 
-        assertFalse(result, "HR should not be able to assign ADMIN role");
+        assertFalse(result, "HR must not assign the ADMIN role");
     }
 
     @Test
@@ -48,7 +48,7 @@ public class AuthorizationServiceTest {
 
         boolean result = service.canAssignRole(actor, actor, RoleType.ADMIN);
 
-        assertFalse(result, "You cannot self-assign");
+        assertFalse(result, "No user may assign a role to themselves");
     }
 
     @Test
@@ -62,7 +62,7 @@ public class AuthorizationServiceTest {
 
         boolean result = service.canReadUser(actor, target);
 
-        assertFalse(result, "You cannot view users outside your department.");
+        assertFalse(result, "MANAGER must not read users from another department");
     }
 
     @Test
@@ -76,7 +76,7 @@ public class AuthorizationServiceTest {
 
         boolean result = service.canUpdateSalary(actor, target);
 
-        assertTrue(result, "You cannot update other employee's salaries.");
+        assertTrue(result, "HR should be able to update another employee's salary");
     }
 
     @Test
@@ -89,7 +89,85 @@ public class AuthorizationServiceTest {
 
         boolean result = service.canReadUser(actor, actor);
 
-        assertTrue(result, "You cannot view other users's profiles.");
+        assertTrue(result, "Any user should be able to read their own profile");
+    }
+
+    @Test
+    void denyEmployeeReadRole(){
+        Role employeeRole = createRole(1L, RoleType.EMPLOYEE);
+        RoleDAO stub = new RoleDAOStub(employeeRole);
+        AuthorizationService service = new AuthorizationService(stub);
+
+        User actor = createUser(1L, employeeRole.getId(), Department.ENGINEERING);
+
+        boolean result = service.canReadRole(actor);
+
+        assertFalse(result, "EMPLOYEE must not be able to read roles");
+    }
+
+    @Test
+    void denyManagerManageRole(){
+        Role employeeRole = createRole(1L, RoleType.MANAGER);
+        RoleDAO stub = new RoleDAOStub(employeeRole);
+        AuthorizationService service = new AuthorizationService(stub);
+
+        User actor = createUser(1L, employeeRole.getId(), Department.IT);
+
+        boolean result = service.canManageRole(actor);
+
+        assertFalse(result, "MANAGER must not manage roles");
+    }
+
+    @Test
+    void hrCanReadRole(){
+        Role employeeRole = createRole(1L, RoleType.HR);
+        RoleDAO stub = new RoleDAOStub(employeeRole);
+        AuthorizationService service = new AuthorizationService(stub);
+
+        User actor = createUser(1L, employeeRole.getId(), Department.HR);
+
+        boolean result = service.canReadRole(actor);
+
+        assertTrue(result, "HR should be able to read roles");
+    }
+
+    @Test
+    void hrCannotManageRole(){
+        Role employeeRole = createRole(1L, RoleType.HR);
+        RoleDAO stub = new RoleDAOStub(employeeRole);
+        AuthorizationService service = new AuthorizationService(stub);
+
+        User actor = createUser(1L, employeeRole.getId(), Department.HR);
+
+        boolean result = service.canManageRole(actor);
+
+        assertFalse(result, "HR must not manage roles");
+    }
+
+    @Test
+    void adminCanReadRole(){
+        Role employeeRole = createRole(1L, RoleType.ADMIN);
+        RoleDAO stub = new RoleDAOStub(employeeRole);
+        AuthorizationService service = new AuthorizationService(stub);
+
+        User actor = createUser(1L, employeeRole.getId(), Department.IT);
+
+        boolean result = service.canReadRole(actor);
+
+        assertTrue(result, "ADMIN should be able to read roles");
+    }
+
+    @Test
+    void adminCanManageRole(){
+        Role employeeRole = createRole(1L, RoleType.ADMIN);
+        RoleDAO stub = new RoleDAOStub(employeeRole);
+        AuthorizationService service = new AuthorizationService(stub);
+
+        User actor = createUser(1L, employeeRole.getId(), Department.IT);
+
+        boolean result = service.canManageRole(actor);
+
+        assertTrue(result, "ADMIN should be able to manage roles");
     }
 
     private Role createRole(Long id, RoleType type){
