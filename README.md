@@ -3,7 +3,7 @@
 A role-based access control (RBAC) system for 
 internal HR/identity management, built with pure Java and JDBC.
 
-> ⚠️ Work in progress — see Roadmap below.
+> ⚠️ Work in progress.
 
 ## About
 An HR access control system, built with pure JDBC to master the persistence layer that a framework like Spring abstracts away — with a planned migration to Spring as a later phase.
