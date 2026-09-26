@@ -14,7 +14,7 @@ public class AuthorizationServiceTest {
     void preventHRSelfSalaryUpdate(){
         Role hrRole = createRole(1L, RoleType.HR);
         RoleDAO stub = new RoleDAOStub(hrRole);
-        AuthorizationService service = new AuthorizationService(stub);
+        AuthorizationServiceImpl service = new AuthorizationServiceImpl(stub);
 
         User actor = createUser(1L, hrRole.getId(), Department.IT);
         User target = createUser(1L,null, Department.IT);
@@ -28,7 +28,7 @@ public class AuthorizationServiceTest {
     void preventHRAssigningAdmin(){
         Role hrRole = createRole(1L, RoleType.HR);
         RoleDAO stub = new RoleDAOStub(hrRole);
-        AuthorizationService service = new AuthorizationService(stub);
+        AuthorizationServiceImpl service = new AuthorizationServiceImpl(stub);
 
         User actor = createUser(1L, hrRole.getId(), Department.IT);
         User target = createUser(2L, null, Department.IT);
@@ -42,7 +42,7 @@ public class AuthorizationServiceTest {
     void preventSelfRoleAssignment(){
         Role hrRole = createRole(1L, RoleType.HR);
         RoleDAO stub = new RoleDAOStub(hrRole);
-        AuthorizationService service = new AuthorizationService(stub);
+        AuthorizationServiceImpl service = new AuthorizationServiceImpl(stub);
 
         User actor = createUser(1L, hrRole.getId(), Department.IT);
 
@@ -55,7 +55,7 @@ public class AuthorizationServiceTest {
     void preventManagerReadingOtherDepartment(){
         Role managerRole = createRole(1L, RoleType.MANAGER);
         RoleDAO stub = new RoleDAOStub(managerRole);
-        AuthorizationService service = new AuthorizationService(stub);
+        AuthorizationServiceImpl service = new AuthorizationServiceImpl(stub);
 
         User actor = createUser(1L, managerRole.getId(), Department.IT);
         User target = createUser(2L, managerRole.getId(), Department.FINANCE);
@@ -69,7 +69,7 @@ public class AuthorizationServiceTest {
     void allowHRUpdatingOtherSalary(){
         Role hrRole = createRole(1L, RoleType.HR);
         RoleDAO stub = new RoleDAOStub(hrRole);
-        AuthorizationService service = new AuthorizationService(stub);
+        AuthorizationServiceImpl service = new AuthorizationServiceImpl(stub);
 
         User actor = createUser(1L, hrRole.getId(), Department.HR);
         User target = createUser(2L, null, Department.ENGINEERING);
@@ -83,7 +83,7 @@ public class AuthorizationServiceTest {
     void allowUserReadingOwnProfile(){
         Role employeeRole = createRole(1L, RoleType.EMPLOYEE);
         RoleDAO stub = new RoleDAOStub(employeeRole);
-        AuthorizationService service = new AuthorizationService(stub);
+        AuthorizationServiceImpl service = new AuthorizationServiceImpl(stub);
 
         User actor = createUser(1L, employeeRole.getId(), Department.SUPPORT);
 
@@ -96,7 +96,7 @@ public class AuthorizationServiceTest {
     void denyEmployeeReadRole(){
         Role employeeRole = createRole(1L, RoleType.EMPLOYEE);
         RoleDAO stub = new RoleDAOStub(employeeRole);
-        AuthorizationService service = new AuthorizationService(stub);
+        AuthorizationServiceImpl service = new AuthorizationServiceImpl(stub);
 
         User actor = createUser(1L, employeeRole.getId(), Department.ENGINEERING);
 
@@ -109,7 +109,7 @@ public class AuthorizationServiceTest {
     void denyManagerManageRole(){
         Role employeeRole = createRole(1L, RoleType.MANAGER);
         RoleDAO stub = new RoleDAOStub(employeeRole);
-        AuthorizationService service = new AuthorizationService(stub);
+        AuthorizationServiceImpl service = new AuthorizationServiceImpl(stub);
 
         User actor = createUser(1L, employeeRole.getId(), Department.IT);
 
@@ -122,7 +122,7 @@ public class AuthorizationServiceTest {
     void hrCanReadRole(){
         Role employeeRole = createRole(1L, RoleType.HR);
         RoleDAO stub = new RoleDAOStub(employeeRole);
-        AuthorizationService service = new AuthorizationService(stub);
+        AuthorizationServiceImpl service = new AuthorizationServiceImpl(stub);
 
         User actor = createUser(1L, employeeRole.getId(), Department.HR);
 
@@ -135,7 +135,7 @@ public class AuthorizationServiceTest {
     void hrCannotManageRole(){
         Role employeeRole = createRole(1L, RoleType.HR);
         RoleDAO stub = new RoleDAOStub(employeeRole);
-        AuthorizationService service = new AuthorizationService(stub);
+        AuthorizationServiceImpl service = new AuthorizationServiceImpl(stub);
 
         User actor = createUser(1L, employeeRole.getId(), Department.HR);
 
@@ -148,7 +148,7 @@ public class AuthorizationServiceTest {
     void adminCanReadRole(){
         Role employeeRole = createRole(1L, RoleType.ADMIN);
         RoleDAO stub = new RoleDAOStub(employeeRole);
-        AuthorizationService service = new AuthorizationService(stub);
+        AuthorizationServiceImpl service = new AuthorizationServiceImpl(stub);
 
         User actor = createUser(1L, employeeRole.getId(), Department.IT);
 
@@ -161,7 +161,7 @@ public class AuthorizationServiceTest {
     void adminCanManageRole(){
         Role employeeRole = createRole(1L, RoleType.ADMIN);
         RoleDAO stub = new RoleDAOStub(employeeRole);
-        AuthorizationService service = new AuthorizationService(stub);
+        AuthorizationServiceImpl service = new AuthorizationServiceImpl(stub);
 
         User actor = createUser(1L, employeeRole.getId(), Department.IT);
 

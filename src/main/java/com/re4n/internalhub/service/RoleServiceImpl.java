@@ -1,0 +1,85 @@
+package com.re4n.internalhub.service;
+
+import com.re4n.internalhub.dao.RoleDAO;
+import com.re4n.internalhub.enums.AppError;
+import com.re4n.internalhub.exception.AppException;
+import com.re4n.internalhub.model.Role;
+import com.re4n.internalhub.model.User;
+
+import java.util.List;
+
+public class RoleServiceImpl implements RoleService {
+    private final RoleDAO roleDAO;
+    private final AuthorizationServiceImpl authService;
+
+    public RoleServiceImpl(RoleDAO roleDAO, AuthorizationServiceImpl authService){
+        this.roleDAO = roleDAO;
+        this.authService = authService;
+    }
+
+    @Override
+    public Role createRole(User actor, Role newRole){
+        if(!authService.canManageRole(actor)){
+           throw new AppException(AppError.AUTHORIZATION_DENIED, null);
+        }
+
+        if(newRole.getRoleName() == null || newRole.getRoleName().isBlank()
+                || newRole.getRoleType() == null
+                || newRole.getMinSalary() == null
+                || newRole.getMaxSalary() == null
+                || newRole.getMinSalary().compareTo(newRole.getMaxSalary()) > 0
+                || newRole.getDescription() == null){
+            throw new AppException(AppError.VALIDATION_FAILED, null);
+        }
+            roleDAO.save(newRole);
+            return newRole;
+        }
+    @Override
+    public void deleteRole(User actor, Long roleId){
+            if(!authService.canManageRole(actor)){
+                throw new AppException(AppError.AUTHORIZATION_DENIED, null);
+            }
+            Role target = roleDAO.findById(roleId);
+            if(target == null){
+                throw new AppException(AppError.RESOURCE_NOT_FOUND, null);
+            }
+            roleDAO.delete(roleId);
+        }
+
+    @Override
+    public Role findRole(User actor, Long targetId){
+        if(!authService.canReadRole(actor)){
+            throw new AppException(AppError.AUTHORIZATION_DENIED, null);
+        }
+        Role target = roleDAO.findById(targetId);
+        if(target == null){
+            throw new AppException(AppError.RESOURCE_NOT_FOUND, null);
+        }
+        return target;
+    }
+
+    @Override
+    public List<Role> findAllRoles(User actor){
+        if(!authService.canReadRole(actor)) {
+            throw new AppException(AppError.AUTHORIZATION_DENIED, null);
+        }
+        return roleDAO.findAll();
+    }
+
+    @Override
+    public Role updateRole(User actor, Role role){
+        if(!authService.canManageRole(actor)){
+            throw new AppException(AppError.AUTHORIZATION_DENIED, null);
+        }
+        if(role.getRoleName() == null || role.getRoleName().isBlank()
+                || role.getRoleType() == null
+                || role.getMinSalary() == null
+                || role.getMaxSalary() == null
+                || role.getMinSalary().compareTo(role.getMaxSalary()) > 0
+                || role.getDescription() == null){
+            throw new AppException(AppError.VALIDATION_FAILED, null);
+        }
+        roleDAO.update(role);
+        return role;
+    }
+}
