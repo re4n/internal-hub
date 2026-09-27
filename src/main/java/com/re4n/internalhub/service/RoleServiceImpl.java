@@ -1,6 +1,7 @@
 package com.re4n.internalhub.service;
 
 import com.re4n.internalhub.dao.RoleDAO;
+import com.re4n.internalhub.dto.RoleResult;
 import com.re4n.internalhub.enums.AppError;
 import com.re4n.internalhub.exception.AppException;
 import com.re4n.internalhub.model.Role;
@@ -18,7 +19,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Role createRole(User actor, Role newRole){
+    public RoleResult createRole(User actor, Role newRole){
         if(!authorizationService.canManageRole(actor)){
            throw new AppException(AppError.AUTHORIZATION_DENIED, null);
         }
@@ -32,7 +33,11 @@ public class RoleServiceImpl implements RoleService {
             throw new AppException(AppError.VALIDATION_FAILED, null);
         }
             roleDAO.save(newRole);
-            return newRole;
+            return new RoleResult(
+                    newRole.getRoleName(),
+                    newRole.getSeniorityLevel().name(),
+                    newRole.getDescription()
+            );
         }
     @Override
     public void deleteRole(User actor, Long roleId){

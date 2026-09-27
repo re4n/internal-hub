@@ -1,6 +1,7 @@
 package com.re4n.internalhub.model;
 
 import com.re4n.internalhub.enums.RoleType;
+import com.re4n.internalhub.enums.SeniorityLevel;
 
 import java.math.BigDecimal;
 
@@ -8,16 +9,18 @@ public class Role {
     private Long id;
     private String roleName;
     private RoleType roleType;
+    private SeniorityLevel seniorityLevel;
     private BigDecimal minSalary;
     private BigDecimal maxSalary;
     private String description;
 
     public Role(){}
 
-    public Role(Long id, String roleName, RoleType roleType, BigDecimal minSalary, BigDecimal maxSalary, String description) {
+    public Role(Long id, String roleName, RoleType roleType, SeniorityLevel seniorityLevel, BigDecimal minSalary, BigDecimal maxSalary, String description) {
         this.id = id;
         this.roleName = roleName;
         this.roleType = roleType;
+        this.seniorityLevel = seniorityLevel;
         this.minSalary = minSalary;
         this.maxSalary = maxSalary;
         this.description = description;
@@ -31,6 +34,9 @@ public class Role {
 
     public RoleType getRoleType() {return roleType;}
     public void setRoleType(RoleType roleType) {this.roleType = roleType;}
+
+    public SeniorityLevel getSeniorityLevel(){return seniorityLevel;}
+    public void setSeniorityLevel(SeniorityLevel seniorityLevel){this.seniorityLevel = seniorityLevel;}
 
     public BigDecimal getMinSalary() {return minSalary;}
     public void setMinSalary(BigDecimal minSalary) {this.minSalary = minSalary;}

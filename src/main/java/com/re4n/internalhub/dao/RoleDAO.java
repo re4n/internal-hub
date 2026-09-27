@@ -1,6 +1,7 @@
 package com.re4n.internalhub.dao;
 
 import com.re4n.internalhub.enums.RoleType;
+import com.re4n.internalhub.enums.SeniorityLevel;
 import com.re4n.internalhub.model.Role;
 
 import java.sql.PreparedStatement;
@@ -10,12 +11,12 @@ import java.sql.SQLException;
 public class RoleDAO extends BaseDAO<Role> {
     @Override
     protected String getInsertSql() {
-        return "INSERT INTO roles (role_name, role_type, min_salary, max_salary, description) VALUES (?, ?, ?, ?, ?)";
+        return "INSERT INTO roles (role_name, role_type, seniority_level, min_salary, max_salary, description) VALUES (?, ?, ?, ?, ?, ?)";
     }
 
     @Override
     protected String getUpdateSql() {
-        return "UPDATE roles SET role_name = ?, role_type = ?, min_salary = ?, max_salary = ?, description = ? WHERE id = ?";
+        return "UPDATE roles SET role_name = ?, role_type = ?, seniority_level = ?, min_salary = ?, max_salary = ?, description = ? WHERE id = ?";
     }
 
     @Override
@@ -40,6 +41,7 @@ public class RoleDAO extends BaseDAO<Role> {
         role.setId(rs.getLong("id"));
         role.setRoleName(rs.getString("role_name"));
         role.setRoleType(RoleType.valueOf(rs.getString("role_type")));
+        role.setSeniorityLevel(SeniorityLevel.valueOf(rs.getString("seniority_level")));
         role.setMinSalary(rs.getBigDecimal("min_salary"));
         role.setMaxSalary(rs.getBigDecimal("max_salary"));
         role.setDescription(rs.getString("description"));
@@ -50,14 +52,20 @@ public class RoleDAO extends BaseDAO<Role> {
     protected void bindSaveParameters(PreparedStatement stmt, Role entity) throws SQLException {
         stmt.setString(1, entity.getRoleName());
         stmt.setString(2, entity.getRoleType().name());
-        stmt.setBigDecimal(3, entity.getMinSalary());
-        stmt.setBigDecimal(4, entity.getMaxSalary());
-        stmt.setString(5, entity.getDescription());
+        stmt.setString(3, entity.getSeniorityLevel().name());
+        stmt.setBigDecimal(4, entity.getMinSalary());
+        stmt.setBigDecimal(5, entity.getMaxSalary());
+        stmt.setString(6, entity.getDescription());
     }
 
     @Override
     protected void bindUpdateParameters(PreparedStatement stmt, Role entity) throws SQLException {
-        bindSaveParameters(stmt, entity);
-        stmt.setLong(6, entity.getId());
+        stmt.setString(1, entity.getRoleName());
+        stmt.setString(2, entity.getRoleType().name());
+        stmt.setString(3, entity.getSeniorityLevel().name());
+        stmt.setBigDecimal(4, entity.getMinSalary());
+        stmt.setBigDecimal(5, entity.getMaxSalary());
+        stmt.setString(6, entity.getDescription());
+        stmt.setLong(7, entity.getId());
     }
 }

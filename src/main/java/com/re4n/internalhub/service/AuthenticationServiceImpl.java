@@ -1,10 +1,13 @@
 package com.re4n.internalhub.service;
 
+import com.re4n.internalhub.dao.RoleDAO;
 import com.re4n.internalhub.dao.UserDAO;
 import com.re4n.internalhub.dto.AuthUserResult;
 import com.re4n.internalhub.dto.NewUserResult;
+import com.re4n.internalhub.dto.RoleResult;
 import com.re4n.internalhub.enums.AppError;
 import com.re4n.internalhub.exception.AppException;
+import com.re4n.internalhub.model.Role;
 import com.re4n.internalhub.model.User;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
@@ -12,12 +15,14 @@ import de.mkammerer.argon2.Argon2Factory;
 public class AuthenticationServiceImpl implements AuthenticationService {
     private static final Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
     private final UserDAO userDAO;
+    private final RoleDAO roleDAO;
     public static final int ITERATIONS = 2;
     public static final int MEMORY_KB = 19456;
     public static final int PARALLELISM = 1;
 
-    public AuthenticationServiceImpl(UserDAO userDAO){
+    public AuthenticationServiceImpl(UserDAO userDAO, RoleDAO roleDAO){
         this.userDAO = userDAO;
+        this.roleDAO = roleDAO;
     }
 
     @Override
@@ -45,14 +50,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(!user.getActive()){
             throw new AppException(AppError.INVALID_CREDENTIALS,null);
         }
+
+        Role role = roleDAO.findById(user.getRoleId());
+        RoleResult roleResult = (role != null) ? new RoleResult(role.getRoleName(), role.getSeniorityLevel().name(), role.getRoleType().name()) : null;
+
         return new AuthUserResult(
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmployeeId(),
                 user.getHireDate(),
                 user.getDepartment(),
-                user.getCorporateEmail());
-    }
+                user.getCorporateEmail(),
+                roleResult);
+    };
 
     private boolean verifyPassword(String plainPassword, String hash){
         if(plainPassword == null || plainPassword.isBlank()){

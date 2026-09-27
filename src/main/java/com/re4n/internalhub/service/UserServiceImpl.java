@@ -159,6 +159,7 @@ public class UserServiceImpl implements UserService{
         if(!authorizationService.canAssignRole(actor, target, role.getRoleType())){
             throw new AppException(AppError.AUTHORIZATION_DENIED, null);
         }
+
         target.setRoleId(roleId);
         userDAO.update(target);
         return target;
