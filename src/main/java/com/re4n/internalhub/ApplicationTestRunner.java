@@ -30,10 +30,10 @@ public class ApplicationTestRunner {
         User adminUser = userDAO.findById(1L); // password IH-ADMIN01 -> root@admin!5?
         User uxUser = userDAO.findById(3L);
 
-        System.out.println(testLoginUser(adminUser.getCorporateEmail(), "root@admin!5?"));
+        System.out.println(testLoginUser(hrUser.getCorporateEmail(), "px6r@W#vWyuv"));
 
 //        seedRole(adminUser);
-//        seedUser(hrUser);
+        seedUser(hrUser);
 
     }
 

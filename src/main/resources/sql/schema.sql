@@ -33,7 +33,8 @@ CREATE TABLE IF NOT EXISTS users (
 --  Initial data insertion
 INSERT IGNORE INTO roles (id, role_name, role_type, seniority_level, min_salary, max_salary, description) VALUES
                                                                                       (1, 'System Administrator', 'ADMIN', 'SENIOR', 13000.00, 20000.00, 'Full system administrator with unrestricted access'),
-                                                                                      (2, 'HR Analyst', 'HR','SENIOR', 8900.00, 11900.00, 'Senior Human Resources Analyst responsible for strategic talent management and personnel administration');
+                                                                                      (2, 'HR Analyst', 'HR','SENIOR', 8900.00, 11900.00, 'Senior Human Resources Analyst responsible for strategic talent management and personnel administration'),
+                                                                                      (3, 'HR Analyst', 'HR','JUNIOR',3700.00, 5000.00, 'Junior HR Analyst responsible for onboarding support, document verification, and employee assistance under supervision');
 
 INSERT IGNORE INTO users (employee_id, first_name, last_name, corporate_email, password_hash, personal_email, salary, department, work_model, hire_date, is_active, role_id) VALUES
                                                                                                                                                                           ('IH-ADMIN01', 'Sys', 'Admin', 'sysadmin@internalhub.com', '$argon2id$v=19$m=19456,t=2,p=1$QuyQwk3ixBncjqKj5RwhHw$LbOtRFyzuTaPVyCS5t+JWxA3+XJ7l4MB8Oq05WU4Smg', 'personal@email.com', 18000.00, 'IT', 'REMOTE', '2024-01-15', TRUE, 1),

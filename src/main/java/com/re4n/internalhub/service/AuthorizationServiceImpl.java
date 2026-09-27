@@ -2,6 +2,7 @@ package com.re4n.internalhub.service;
 
 import com.re4n.internalhub.dao.RoleDAO;
 import com.re4n.internalhub.enums.RoleType;
+import com.re4n.internalhub.enums.SeniorityLevel;
 import com.re4n.internalhub.model.Role;
 import com.re4n.internalhub.model.User;
 
@@ -17,7 +18,14 @@ public class AuthorizationServiceImpl implements AuthorizationService{
         RoleType actorType = resolveActorType(actor);
         if (actorType == null){return false;}
 
-        if(actorType == RoleType.HR) {return true;}
+        if(actorType == RoleType.HR) {
+            Role actorRole = roleDAO.findById(actor.getRoleId());
+            SeniorityLevel seniorityLevel = actorRole.getSeniorityLevel();
+            if (seniorityLevel == null) {return false;}
+            return seniorityLevel == SeniorityLevel.SENIOR ||
+                    seniorityLevel == SeniorityLevel.LEAD ||
+                    seniorityLevel == SeniorityLevel.EXECUTIVE;
+        }
         return false;
     }
 
