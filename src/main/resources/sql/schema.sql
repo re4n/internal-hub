@@ -28,3 +28,5 @@ CREATE TABLE IF NOT EXISTS users (
     role_id BIGINT,
     CONSTRAINT fk_user_role FOREIGN KEY (role_id) REFERENCES roles(id)
     );
+
+--Initial data insertion

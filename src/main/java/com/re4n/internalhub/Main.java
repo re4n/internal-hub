@@ -2,8 +2,7 @@ package com.re4n.internalhub;
 
 import com.re4n.internalhub.dao.RoleDAO;
 import com.re4n.internalhub.dao.UserDAO;
-import com.re4n.internalhub.enums.Department;
-import com.re4n.internalhub.exception.AppException;
+import com.re4n.internalhub.dto.AuthUserResult;
 import com.re4n.internalhub.model.User;
 import com.re4n.internalhub.service.*;
 import com.re4n.internalhub.util.CredentialGenerator;
@@ -13,25 +12,17 @@ public class Main {
         RoleDAO roleDAO = new RoleDAO();
         UserDAO userDAO = new UserDAO();
         CredentialGenerator generator = new CredentialGenerator();
-        AuthorizationService authService = new AuthorizationServiceImpl(roleDAO);
+        AuthorizationService authorizationService = new AuthorizationServiceImpl(roleDAO);
         AuthenticationService authenticationService = new AuthenticationServiceImpl(userDAO);
-        UserService userService = new UserServiceImpl(userDAO, roleDAO, authService, generator);
+        UserService userService = new UserServiceImpl(userDAO, roleDAO, authorizationService,authenticationService, generator);
 
-        User actor = userDAO.findById(1L);
+        User hrUser = userDAO.findById(2L); // password IH-Y6FX9G -> nwERBfMZ*U9E
 
-        User newUser = new User();
-        newUser.setFirstName("Ryan");
-        newUser.setLastName("Rouxinol");
-        newUser.setPersonalEmail("ryanrouxinol@email.com");
-        newUser.setDepartment(Department.ENGINEERING);
+        User adminUser = userDAO.findById(1L); // password IH-ADMIN01 -> root!admin1@
 
-        try {
-            User created = userService.createUser(actor, newUser);
-            System.out.println("Created: " + created.getEmployeeId());
-            System.out.println("Email: " + created.getCorporateEmail());
-        }catch (AppException e){
-            System.out.println("Error: " + e.getErrorType() + " - " + e.getMessage());
-            e.printStackTrace();
-        }
+        User userTest =  userDAO.findById(3L); // password IH-MJG9BE -> uhG--ym!FqxV
+
+        AuthUserResult loggedUser = authenticationService.login(adminUser.getCorporateEmail(), "root!admin1@");
+        System.out.println(loggedUser);
     }
 }

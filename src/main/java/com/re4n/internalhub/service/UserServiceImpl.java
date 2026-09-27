@@ -2,6 +2,7 @@ package com.re4n.internalhub.service;
 
 import com.re4n.internalhub.dao.RoleDAO;
 import com.re4n.internalhub.dao.UserDAO;
+import com.re4n.internalhub.dto.NewUserResult;
 import com.re4n.internalhub.enums.AppError;
 import com.re4n.internalhub.exception.AppException;
 import com.re4n.internalhub.model.Role;
@@ -9,6 +10,7 @@ import com.re4n.internalhub.model.User;
 import com.re4n.internalhub.util.CredentialGenerator;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,34 +18,50 @@ public class UserServiceImpl implements UserService{
     private static final int MAX_ATTEMPTS = 10;
     private final UserDAO userDAO;
     private final RoleDAO roleDAO;
-    private final AuthorizationService authService;
+    private final AuthorizationService authorizationService;
+    private final AuthenticationService authenticationService;
     private final CredentialGenerator generator;
 
-    public UserServiceImpl(UserDAO userDAO, RoleDAO roleDAO, AuthorizationService authService, CredentialGenerator generator) {
+    public UserServiceImpl(UserDAO userDAO, RoleDAO roleDAO, AuthorizationService authorizationService,AuthenticationService authenticationService, CredentialGenerator generator) {
         this.userDAO = userDAO;
         this.roleDAO = roleDAO;
-        this.authService = authService;
+        this.authorizationService = authorizationService;
+        this.authenticationService = authenticationService;
         this.generator = generator;
     }
 
     @Override
-    public User createUser(User actor, User newUser) {
-        if (!authService.canCreateUser(actor)) {
+    public NewUserResult createUser(User actor, User newUser) {
+        if (!authorizationService.canCreateUser(actor)) {
             throw new AppException(AppError.AUTHORIZATION_DENIED, null);
         }
+
         if (newUser.getFirstName() == null || newUser.getFirstName().isBlank()
                 || newUser.getLastName() == null || newUser.getLastName().isBlank()
                 || newUser.getPersonalEmail() == null
-                || newUser.getDepartment() == null) {
+                || newUser.getDepartment() == null){
             throw new AppException(AppError.VALIDATION_FAILED, null);
         }
+
+        String temporaryPassword = generator.genTemporaryPassword();
+        String hash = authenticationService.hashPassword(temporaryPassword);
+        newUser.setPasswordHash(hash);
+        newUser.setHireDate(LocalDate.now());
+        newUser.setActive(true);
 
         for (int attempts = 0; attempts < MAX_ATTEMPTS; attempts++) {
             newUser.setEmployeeId(generator.genEmployeeId());
             newUser.setCorporateEmail(generator.genEmployeeCorporateEmail(newUser.getFirstName(), newUser.getLastName(), attempts));
             try {
                 userDAO.save(newUser);
-                return newUser;
+                return new NewUserResult(
+                        newUser.getFirstName(),
+                        newUser.getLastName(),
+                        newUser.getEmployeeId(),
+                        newUser.getHireDate(),
+                        newUser.getDepartment(),
+                        newUser.getCorporateEmail(),
+                        temporaryPassword );
             } catch (AppException e) {
                 if (e.getErrorType() == AppError.DUPLICATE_IDENTITY) {
                     continue;
@@ -62,7 +80,7 @@ public class UserServiceImpl implements UserService{
             throw new AppException(AppError.RESOURCE_NOT_FOUND, null);
         }
 
-        if (!authService.canReadUser(actor, target)) {
+        if (!authorizationService.canReadUser(actor, target)) {
             throw new AppException(AppError.AUTHORIZATION_DENIED, null);
         }
         return target;
@@ -75,7 +93,7 @@ public class UserServiceImpl implements UserService{
         List<User> visibleUsers = new ArrayList<>();
 
         for(User u: allUsers){
-            if(authService.canReadUser(actor, u)){
+            if(authorizationService.canReadUser(actor, u)){
                 visibleUsers.add(u);
             }
         }
@@ -88,7 +106,7 @@ public class UserServiceImpl implements UserService{
         if (target == null){
             throw new AppException(AppError.RESOURCE_NOT_FOUND, null);
         }
-        if (!authService.canDisableUser(actor, target)) {
+        if (!authorizationService.canDisableUser(actor, target)) {
             throw new AppException(AppError.AUTHORIZATION_DENIED, null);
         }
         target.setActive(false);
@@ -103,7 +121,7 @@ public class UserServiceImpl implements UserService{
             throw new AppException(AppError.RESOURCE_NOT_FOUND, null);
         }
 
-        if (!authService.canUpdateSalary(actor, target)){
+        if (!authorizationService.canUpdateSalary(actor, target)){
             throw new AppException(AppError.AUTHORIZATION_DENIED, null);
         }
 
@@ -138,7 +156,7 @@ public class UserServiceImpl implements UserService{
             throw new AppException(AppError.RESOURCE_NOT_FOUND, null);
         }
 
-        if(!authService.canAssignRole(actor, target, role.getRoleType())){
+        if(!authorizationService.canAssignRole(actor, target, role.getRoleType())){
             throw new AppException(AppError.AUTHORIZATION_DENIED, null);
         }
         target.setRoleId(roleId);

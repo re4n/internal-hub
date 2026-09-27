@@ -54,7 +54,7 @@ public class UserDAO extends BaseDAO<User>{
         user.setWorkModel(WorkModel.valueOf(rs.getString("work_model")));
         user.setHireDate(rs.getObject("hire_date", LocalDate.class));
         user.setActive(rs.getBoolean("is_active"));
-        user.setRoleId(rs.getLong("role_id"));
+        user.setRoleId(rs.getObject("role_id", Long.class));
         return user;
     }
 

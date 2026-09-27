@@ -10,16 +10,16 @@ import java.util.List;
 
 public class RoleServiceImpl implements RoleService {
     private final RoleDAO roleDAO;
-    private final AuthorizationServiceImpl authService;
+    private final AuthorizationService authorizationService;
 
-    public RoleServiceImpl(RoleDAO roleDAO, AuthorizationServiceImpl authService){
+    public RoleServiceImpl(RoleDAO roleDAO, AuthorizationService authorizationService){
         this.roleDAO = roleDAO;
-        this.authService = authService;
+        this.authorizationService = authorizationService;
     }
 
     @Override
     public Role createRole(User actor, Role newRole){
-        if(!authService.canManageRole(actor)){
+        if(!authorizationService.canManageRole(actor)){
            throw new AppException(AppError.AUTHORIZATION_DENIED, null);
         }
 
@@ -36,7 +36,7 @@ public class RoleServiceImpl implements RoleService {
         }
     @Override
     public void deleteRole(User actor, Long roleId){
-            if(!authService.canManageRole(actor)){
+            if(!authorizationService.canManageRole(actor)){
                 throw new AppException(AppError.AUTHORIZATION_DENIED, null);
             }
             Role target = roleDAO.findById(roleId);
@@ -48,7 +48,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Role findRole(User actor, Long targetId){
-        if(!authService.canReadRole(actor)){
+        if(!authorizationService.canReadRole(actor)){
             throw new AppException(AppError.AUTHORIZATION_DENIED, null);
         }
         Role target = roleDAO.findById(targetId);
@@ -60,7 +60,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public List<Role> findAllRoles(User actor){
-        if(!authService.canReadRole(actor)) {
+        if(!authorizationService.canReadRole(actor)) {
             throw new AppException(AppError.AUTHORIZATION_DENIED, null);
         }
         return roleDAO.findAll();
@@ -68,7 +68,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Role updateRole(User actor, Role role){
-        if(!authService.canManageRole(actor)){
+        if(!authorizationService.canManageRole(actor)){
             throw new AppException(AppError.AUTHORIZATION_DENIED, null);
         }
         if(role.getRoleName() == null || role.getRoleName().isBlank()

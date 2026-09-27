@@ -1,6 +1,8 @@
 package com.re4n.internalhub.service;
 
 import com.re4n.internalhub.dao.UserDAO;
+import com.re4n.internalhub.dto.AuthUserResult;
+import com.re4n.internalhub.dto.NewUserResult;
 import com.re4n.internalhub.enums.AppError;
 import com.re4n.internalhub.exception.AppException;
 import com.re4n.internalhub.model.User;
@@ -23,11 +25,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(plainPassword == null || plainPassword.isBlank() || plainPassword.length() < 12){
             throw new AppException(AppError.VALIDATION_FAILED, null);
         }
-        return argon2.hash(ITERATIONS, MEMORY_KB, PARALLELISM, plainPassword);
+        char[] passwordChars = plainPassword.toCharArray();
+        try{
+            return argon2.hash(ITERATIONS, MEMORY_KB, PARALLELISM, passwordChars);
+        } finally {
+            java.util.Arrays.fill(passwordChars, '\u0000');
+        }
     }
 
     @Override
-    public User login(String email, String plainPassword){
+    public AuthUserResult login(String email, String plainPassword){
         User user = userDAO.findByEmail(email);
         if(user == null){
             throw new AppException(AppError.INVALID_CREDENTIALS, null);
@@ -38,7 +45,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(!user.getActive()){
             throw new AppException(AppError.INVALID_CREDENTIALS,null);
         }
-        return  user;
+        return new AuthUserResult(
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmployeeId(),
+                user.getHireDate(),
+                user.getDepartment(),
+                user.getCorporateEmail());
     }
 
     private boolean verifyPassword(String plainPassword, String hash){
@@ -48,6 +61,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(hash == null || hash.isBlank()){
             return false;
         }
-        return argon2.verify(hash, plainPassword);
+        char[] passwordChars = plainPassword.toCharArray();
+        try{
+            return argon2.verify(hash, passwordChars);
+        }finally {
+            java.util.Arrays.fill(passwordChars, '\u0000');
+        }
     }
 }
