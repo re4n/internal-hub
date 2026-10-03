@@ -33,7 +33,7 @@ public class ApplicationTestRunner {
         System.out.println(testLoginUser(hrUser.getCorporateEmail(), "px6r@W#vWyuv"));
 
 //        seedRole(adminUser);
-        seedUser(hrUser);
+//        System.out.println(seedUser(hrUser));
 
     }
 
