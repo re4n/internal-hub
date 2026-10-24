@@ -21,7 +21,7 @@ public class ApplicationTestRunner {
     private static final UserDAO userDAO = new UserDAO();
     private static final CredentialGenerator generator = new CredentialGenerator();
     private static final AuthorizationService authorizationService = new AuthorizationServiceImpl(roleDAO);
-    private static final AuthenticationService authenticationService = new AuthenticationServiceImpl(userDAO, roleDAO);
+    private static final AuthenticationService authenticationService = new AuthenticationServiceImpl(userDAO, roleDAO, null);
     private static final RoleService roleService= new RoleServiceImpl(roleDAO, authorizationService);
     private static final UserService userService = new UserServiceImpl(userDAO, roleDAO, authorizationService, authenticationService, generator);
 

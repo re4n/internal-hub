@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public record AuthUserResult(
+        String token,
         String firstName,
         String lastName,
         String employeeId,
