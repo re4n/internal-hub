@@ -14,13 +14,15 @@ import java.net.InetSocketAddress;
 
 public class HttpAppServer {
     private static final int PORT = 8080;
-    private static final String DEV_JWT_SECRET = "internalhub_dev_secret_key_1234567890_0987654321";
+    private static final String DEFAULT_JWT = "internalhub_dev_secretkey_unsafe@1234";
+
+    private static final String JWT_SECRET = System.getenv("JWT_SECRET") != null ? System.getenv("JWT_SECRET") : DEFAULT_JWT;
 
     public static void main(String[] args) throws IOException{
         ObjectMapper objectMapper = new ObjectMapper();
         UserDAO userDAO = new UserDAO();
         RoleDAO roleDAO = new RoleDAO();
-        AuthenticationService authenticationService = new AuthenticationServiceImpl(userDAO, roleDAO, DEV_JWT_SECRET);
+        AuthenticationService authenticationService = new AuthenticationServiceImpl(userDAO, roleDAO, JWT_SECRET);
 
         objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
         objectMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);

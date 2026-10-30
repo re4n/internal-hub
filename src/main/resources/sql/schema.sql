@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS internalhub;
+CREATE DATABASE IF NOT EXISTS internal_hub_db;
 
-USE internalhub;
+USE internal_hub_db;
 
 CREATE TABLE IF NOT EXISTS roles (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
