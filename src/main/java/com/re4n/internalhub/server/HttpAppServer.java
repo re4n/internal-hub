@@ -14,11 +14,14 @@ import java.net.InetSocketAddress;
 
 public class HttpAppServer {
     private static final int PORT = 8080;
-    private static final String DEFAULT_JWT = "internalhub_dev_secretkey_unsafe@1234";
 
-    private static final String JWT_SECRET = System.getenv("JWT_SECRET") != null ? System.getenv("JWT_SECRET") : DEFAULT_JWT;
+    private static final String JWT_SECRET = System.getenv("JWT_SECRET");
 
     public static void main(String[] args) throws IOException{
+        if(JWT_SECRET == null || JWT_SECRET.length() < 32){
+            throw new IllegalStateException("JWT_SECRET must be set");
+        }
+
         ObjectMapper objectMapper = new ObjectMapper();
         UserDAO userDAO = new UserDAO();
         RoleDAO roleDAO = new RoleDAO();

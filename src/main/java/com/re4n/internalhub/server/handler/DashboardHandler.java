@@ -23,16 +23,17 @@ public class DashboardHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        if(!"GET".equalsIgnoreCase(exchange.getRequestMethod())){
-            exchange.sendResponseHeaders(405, -1);
-            return;
-        }
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
         exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
         if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
             exchange.sendResponseHeaders(204, -1);
+            return;
+        }
+
+        if(!"GET".equalsIgnoreCase(exchange.getRequestMethod())){
+            exchange.sendResponseHeaders(405, -1);
             return;
         }
 

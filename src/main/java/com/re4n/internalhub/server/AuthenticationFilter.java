@@ -41,11 +41,16 @@ public class AuthenticationFilter extends Filter {
         try {
             Long userId = authenticationService.userIdExtractor(token);
             User user = userDAO.findById(userId);
-            exchange.setAttribute("authenticatedUser", user);
 
+            if(user == null || !Boolean.TRUE.equals(user.getActive())){
+                sendUnauthorized(exchange, "Unauthorized");
+                return;
+            }
+            exchange.setAttribute("authenticatedUser", user);
             chain.doFilter(exchange);
+
         }catch(Exception e){
-            sendUnauthorized(exchange, "Invalid token!");
+            sendUnauthorized(exchange, "Unauthorized");
         }
 
     }
@@ -60,7 +65,7 @@ public class AuthenticationFilter extends Filter {
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
 
         String jsonResponse = String.format("{\"code\":\"UNAUTHORIZED\",\"message\":\"%s\"}", message);
-        byte[] response = message.getBytes(StandardCharsets.UTF_8);
+        byte[] response = jsonResponse.getBytes(StandardCharsets.UTF_8);
 
         exchange.sendResponseHeaders(401, response.length);
         try(OutputStream outputStream = exchange.getResponseBody()){
@@ -68,3 +73,4 @@ public class AuthenticationFilter extends Filter {
         }
     }
 }
+
