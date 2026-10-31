@@ -8,11 +8,11 @@ services:
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./src/main/resources/sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
-    restart: always
+    restart: unless-stopped
     networks:
       - internal-hub-net
 
@@ -20,7 +20,7 @@ services:
     build: .
     container_name: internal_hub_api
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     environment:
       - DB_URL=jdbc:mysql://db:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       - DB_USER=${DB_USER}
@@ -28,7 +28,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
     depends_on:
       - db
-    restart: always
+    restart: unless-stopped
     networks:
       - internal-hub-net
 
