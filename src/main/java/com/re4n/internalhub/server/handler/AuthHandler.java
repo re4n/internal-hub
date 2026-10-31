@@ -60,12 +60,11 @@ public class AuthHandler implements HttpHandler {
            sendAppErrorResponse(exchange, e);
         }catch (com.fasterxml.jackson.core.JsonProcessingException e){
             sendAppErrorResponse(exchange, new AppException(AppError.VALIDATION_FAILED, e));
-        } catch (Exception e){
-            sendAppErrorResponse(exchange, new AppException(AppError.VALIDATION_FAILED));
-        }catch (Throwable e){
-            System.err.println("ERROR");
+        }catch (Exception e){
+            AppException ex = new AppException(AppError.INTERNAL_ERROR, e);
+            System.err.println("Incident " + ex.getIncidentId());
             e.printStackTrace();
-            sendAppErrorResponse(exchange, new AppException(AppError.VALIDATION_FAILED));
+            sendAppErrorResponse(exchange, ex);
         }
     }
 

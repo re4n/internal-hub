@@ -33,25 +33,24 @@ public class AuthenticationFilter extends Filter {
         String authenticationHeader = exchange.getRequestHeaders().getFirst("Authorization");
 
         if(authenticationHeader == null ||!authenticationHeader.startsWith("Bearer ")) {
-            sendUnauthorized(exchange, "Missed Authorization header");
+            sendUnauthorized(exchange, "Unauthorized");
             return;
         }
         String token = authenticationHeader.substring(7);
-
+        User user;
         try {
             Long userId = authenticationService.userIdExtractor(token);
-            User user = userDAO.findById(userId);
-
-            if(user == null || !Boolean.TRUE.equals(user.getActive())){
-                sendUnauthorized(exchange, "Unauthorized");
-                return;
-            }
-            exchange.setAttribute("authenticatedUser", user);
-            chain.doFilter(exchange);
-
+            user = userDAO.findById(userId);
         }catch(Exception e){
             sendUnauthorized(exchange, "Unauthorized");
+            return;
         }
+        if(user == null || !Boolean.TRUE.equals(user.getActive())){
+            sendUnauthorized(exchange, "Unauthorized");
+            return;
+        }
+        exchange.setAttribute("authenticatedUser", user);
+        chain.doFilter(exchange);
 
     }
 
