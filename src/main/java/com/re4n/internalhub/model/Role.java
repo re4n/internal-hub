@@ -1,28 +1,29 @@
 package com.re4n.internalhub.model;
 
-import com.re4n.internalhub.enums.Department;
+import com.re4n.internalhub.enums.RoleType;
+import com.re4n.internalhub.enums.SeniorityLevel;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 
 public class Role {
     private Long id;
     private String roleName;
-    private Department department;
-    private Integer accessLevel;
-    private Double salary;
+    private RoleType roleType;
+    private SeniorityLevel seniorityLevel;
+    private BigDecimal minSalary;
+    private BigDecimal maxSalary;
     private String description;
-    private LocalDate creationDate;
 
     public Role(){}
 
-    public Role(Long id, String roleName, Department department, Integer accessLevel, Double salary, String description, LocalDate creationDate) {
+    public Role(Long id, String roleName, RoleType roleType, SeniorityLevel seniorityLevel, BigDecimal minSalary, BigDecimal maxSalary, String description) {
         this.id = id;
         this.roleName = roleName;
-        this.department = department;
-        this.accessLevel = accessLevel;
-        this.salary = salary;
+        this.roleType = roleType;
+        this.seniorityLevel = seniorityLevel;
+        this.minSalary = minSalary;
+        this.maxSalary = maxSalary;
         this.description = description;
-        this.creationDate = creationDate;
     }
 
     public Long getId() {return id;}
@@ -31,18 +32,18 @@ public class Role {
     public String getRoleName() {return roleName;}
     public void setRoleName(String roleName) {this.roleName = roleName;}
 
-    public Department getDepartment() {return department;}
-    public void setDepartment(Department department) {this.department = department;}
+    public RoleType getRoleType() {return roleType;}
+    public void setRoleType(RoleType roleType) {this.roleType = roleType;}
 
-    public Integer getAccessLevel() {return accessLevel;}
-    public void setAccessLevel(Integer accessLevel) {this.accessLevel = accessLevel;}
+    public SeniorityLevel getSeniorityLevel(){return seniorityLevel;}
+    public void setSeniorityLevel(SeniorityLevel seniorityLevel){this.seniorityLevel = seniorityLevel;}
 
-    public Double getSalary() {return salary;}
-    public void setSalary(Double salary) {this.salary = salary;}
+    public BigDecimal getMinSalary() {return minSalary;}
+    public void setMinSalary(BigDecimal minSalary) {this.minSalary = minSalary;}
+
+    public BigDecimal getMaxSalary() {return maxSalary;}
+    public void setMaxSalary(BigDecimal maxSalary) {this.maxSalary = maxSalary;}
 
     public String getDescription() {return description;}
     public void setDescription(String description) {this.description = description;}
-
-    public LocalDate getCreationDate() {return creationDate;}
-    public void setCreationDate(LocalDate creationDate) {this.creationDate = creationDate;}
 }

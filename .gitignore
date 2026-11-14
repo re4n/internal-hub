@@ -41,3 +41,6 @@ build/
 # Local configuration (Database credentials)
 *.properties
 *.env
+
+### Local Archives ###
+DECISIONS.md

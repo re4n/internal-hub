@@ -1,6 +1,8 @@
 package com.re4n.internalhub.dao;
 
 import com.re4n.internalhub.config.DbConnection;
+import com.re4n.internalhub.enums.AppError;
+import com.re4n.internalhub.exception.AppException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,7 +22,8 @@ public abstract class BaseDAO<T> implements GenericDAO<T> {
     protected abstract String getSelectByIdSql();
     protected abstract String getSelectAllSql();
     protected abstract T mapResultSetToEntity(ResultSet rs ) throws SQLException;
-    protected  abstract void bindParameters(PreparedStatement stmt, T entity) throws SQLException;
+    protected abstract void bindSaveParameters(PreparedStatement stmt, T entity) throws SQLException;
+    protected abstract void bindUpdateParameters(PreparedStatement stmt, T entity) throws SQLException;
 
     @Override
     public void save(T entity) {
@@ -28,30 +31,82 @@ public abstract class BaseDAO<T> implements GenericDAO<T> {
 
         try(Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)){
-            bindParameters(stmt, entity);
+            bindSaveParameters(stmt, entity);
             stmt.executeUpdate();
         }catch (SQLException e){
-            System.err.println("[ERROR] - " + e.getMessage());
+            if(e.getErrorCode() == 1062){
+                throw new AppException(AppError.DUPLICATE_IDENTITY, e);
+            }
+            throw new AppException(AppError.DB_PERSISTENCE_VIOLATION, e);
         }
     }
 
     @Override
     public void update(T entity) {
+        String sql = getUpdateSql();
 
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            bindUpdateParameters(stmt, entity);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            if(e.getErrorCode() == 1062){
+                throw new AppException(AppError.DUPLICATE_IDENTITY, e);
+            }
+            throw new AppException(AppError.DB_PERSISTENCE_VIOLATION, e);
+        }
     }
 
     @Override
     public void delete(Long id) {
+        String sql = getDeleteSql();
 
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
+        }catch(SQLException e){
+            throw new AppException(AppError.FOREIGN_KEY_VIOLATION, e);
+        }
     }
 
     @Override
     public T findById(Long id) {
-        return null;
+        String sql = getSelectByIdSql();
+        T entity = null;
+
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setLong(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()){
+                if (rs.next()){
+                   entity = mapResultSetToEntity(rs);
+                }
+            }
+        }catch (SQLException e){
+            throw new AppException(AppError.DB_PERSISTENCE_VIOLATION, e);
+        }
+        return entity;
     }
 
     @Override
     public List<T> findAll() {
-        return List.of();
+        String sql = getSelectAllSql();
+        List<T> entityList = new java.util.ArrayList<>();
+
+        try(Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+
+            try(ResultSet rs = stmt.executeQuery()){
+                while (rs.next()){
+                    T entity  = mapResultSetToEntity(rs);
+                    entityList.add(entity);
+                }
+            }
+        }catch (SQLException e){
+            throw new AppException(AppError.DB_PERSISTENCE_VIOLATION, e);
+        }
+        return entityList;
     }
 }
