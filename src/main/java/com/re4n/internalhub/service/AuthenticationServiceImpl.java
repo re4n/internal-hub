@@ -62,7 +62,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new AppException(AppError.INVALID_CREDENTIALS,null);
         }
 
-        Role role = roleDAO.findById(user.getRoleId());
+        Role role = user.getRoleId() != null ? roleDAO.findById(user.getRoleId()) : null;
         RoleResult roleResult = (role != null) ? new RoleResult(role.getRoleName(), role.getSeniorityLevel().name(), role.getRoleType().name()) : null;
         String token = generateToken(user);
 
@@ -75,7 +75,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 user.getDepartment(),
                 user.getCorporateEmail(),
                 roleResult);
-    };
+    }
 
     @Override
     public String generateToken(User user) {
@@ -100,7 +100,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .getPayload();
             return Long.parseLong(claims.getSubject());
         }catch (JwtException | IllegalArgumentException e){
-            throw new AppException(AppError.AUTHORIZATION_DENIED, e);
+            throw new AppException(AppError.INVALID_CREDENTIALS, e);
         }
     }
 

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.re4n.internalhub.dao.RoleDAO;
 import com.re4n.internalhub.dao.UserDAO;
 import com.re4n.internalhub.server.handler.AuthHandler;
-import com.re4n.internalhub.server.handler.DashboardHandler;
+import com.re4n.internalhub.server.handler.ProfileHandler;
 import com.re4n.internalhub.service.AuthenticationService;
 import com.re4n.internalhub.service.AuthenticationServiceImpl;
 import com.sun.net.httpserver.HttpServer;
@@ -14,21 +14,26 @@ import java.net.InetSocketAddress;
 
 public class HttpAppServer {
     private static final int PORT = 8080;
-    private static final String DEV_JWT_SECRET = "internalhub_dev_secret_key_1234567890_0987654321";
+
+    private static final String JWT_SECRET = System.getenv("JWT_SECRET");
 
     public static void main(String[] args) throws IOException{
+        if(JWT_SECRET == null || JWT_SECRET.length() < 32){
+            throw new IllegalStateException("JWT_SECRET must be set");
+        }
+
         ObjectMapper objectMapper = new ObjectMapper();
         UserDAO userDAO = new UserDAO();
         RoleDAO roleDAO = new RoleDAO();
-        AuthenticationService authenticationService = new AuthenticationServiceImpl(userDAO, roleDAO, DEV_JWT_SECRET);
+        AuthenticationService authenticationService = new AuthenticationServiceImpl(userDAO, roleDAO, JWT_SECRET);
 
         objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
         objectMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
 
         server.createContext("/auth/login", new AuthHandler(authenticationService, objectMapper));
-        var dashboardContext = server.createContext("/dashboard", new DashboardHandler(objectMapper, roleDAO));
-        dashboardContext.getFilters().add(new AuthenticationFilter(authenticationService, userDAO));
+        var profileContext = server.createContext("/profile", new ProfileHandler(objectMapper, roleDAO));
+        profileContext.getFilters().add(new AuthenticationFilter(authenticationService, userDAO));
         server.setExecutor(null);
         System.out.println("HTTP server running on: http://localhost:" + PORT);
         server.start();

@@ -4,6 +4,7 @@ public enum AppError {
     DB_PERSISTENCE_VIOLATION("IHSC-E100", "Operation aborted for security reasons.", 500),
     DB_CONNECTION_FAILED("IHSC-E101", "Communication failure with the server.", 503),
     DB_DRIVER_NOT_FOUND("IHSC-E102", "Driver MySQL not found.", 500),
+    INTERNAL_ERROR("IHSC-E103", "Unexpected Error", 500),
 
     RESOURCE_NOT_FOUND("IHBC-E200", "The parameter being searched doesn't exist.", 404),
     DUPLICATE_IDENTITY("IHBC-E201", "A unique field already exists", 409),

@@ -60,8 +60,11 @@ public class AuthHandler implements HttpHandler {
            sendAppErrorResponse(exchange, e);
         }catch (com.fasterxml.jackson.core.JsonProcessingException e){
             sendAppErrorResponse(exchange, new AppException(AppError.VALIDATION_FAILED, e));
-        } catch (Exception e){
-            sendAppErrorResponse(exchange, new AppException(AppError.VALIDATION_FAILED));
+        }catch (Exception e){
+            AppException ex = new AppException(AppError.INTERNAL_ERROR, e);
+            System.err.println("Incident " + ex.getIncidentId());
+            e.printStackTrace();
+            sendAppErrorResponse(exchange, ex);
         }
     }
 
@@ -77,11 +80,13 @@ public class AuthHandler implements HttpHandler {
 
     private void sendJsonResponse(HttpExchange exchange, int statusCode, Object body) throws IOException {
         byte[] bytes = objectMapper.writeValueAsBytes(body);
+
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "POST, OPTIONS");
         exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
         exchange.getResponseHeaders().set("Content-Type", "application/json");
         exchange.sendResponseHeaders(statusCode, bytes.length);
+
         try(OutputStream outputStream = exchange.getResponseBody()){
             outputStream.write(bytes);
         }

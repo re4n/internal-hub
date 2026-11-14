@@ -33,20 +33,24 @@ public class AuthenticationFilter extends Filter {
         String authenticationHeader = exchange.getRequestHeaders().getFirst("Authorization");
 
         if(authenticationHeader == null ||!authenticationHeader.startsWith("Bearer ")) {
-            sendUnauthorized(exchange, "Missed Authorization header");
+            sendUnauthorized(exchange, "Unauthorized");
             return;
         }
         String token = authenticationHeader.substring(7);
-
+        User user;
         try {
             Long userId = authenticationService.userIdExtractor(token);
-            User user = userDAO.findById(userId);
-            exchange.setAttribute("authenticatedUser", user);
-
-            chain.doFilter(exchange);
+            user = userDAO.findById(userId);
         }catch(Exception e){
-            sendUnauthorized(exchange, "Invalid token!");
+            sendUnauthorized(exchange, "Unauthorized");
+            return;
         }
+        if(user == null || !Boolean.TRUE.equals(user.getActive())){
+            sendUnauthorized(exchange, "Unauthorized");
+            return;
+        }
+        exchange.setAttribute("authenticatedUser", user);
+        chain.doFilter(exchange);
 
     }
 
@@ -60,7 +64,7 @@ public class AuthenticationFilter extends Filter {
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
 
         String jsonResponse = String.format("{\"code\":\"UNAUTHORIZED\",\"message\":\"%s\"}", message);
-        byte[] response = message.getBytes(StandardCharsets.UTF_8);
+        byte[] response = jsonResponse.getBytes(StandardCharsets.UTF_8);
 
         exchange.sendResponseHeaders(401, response.length);
         try(OutputStream outputStream = exchange.getResponseBody()){
@@ -68,3 +72,4 @@ public class AuthenticationFilter extends Filter {
         }
     }
 }
+
