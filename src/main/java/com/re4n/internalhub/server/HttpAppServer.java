@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.re4n.internalhub.dao.RoleDAO;
 import com.re4n.internalhub.dao.UserDAO;
 import com.re4n.internalhub.server.handler.AuthHandler;
-import com.re4n.internalhub.server.handler.DashboardHandler;
+import com.re4n.internalhub.server.handler.ProfileHandler;
 import com.re4n.internalhub.service.AuthenticationService;
 import com.re4n.internalhub.service.AuthenticationServiceImpl;
 import com.sun.net.httpserver.HttpServer;
@@ -32,8 +32,8 @@ public class HttpAppServer {
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
 
         server.createContext("/auth/login", new AuthHandler(authenticationService, objectMapper));
-        var dashboardContext = server.createContext("/dashboard", new DashboardHandler(objectMapper, roleDAO));
-        dashboardContext.getFilters().add(new AuthenticationFilter(authenticationService, userDAO));
+        var profileContext = server.createContext("/profile", new ProfileHandler(objectMapper, roleDAO));
+        profileContext.getFilters().add(new AuthenticationFilter(authenticationService, userDAO));
         server.setExecutor(null);
         System.out.println("HTTP server running on: http://localhost:" + PORT);
         server.start();

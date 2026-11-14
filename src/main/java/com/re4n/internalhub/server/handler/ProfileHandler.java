@@ -12,11 +12,11 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class DashboardHandler implements HttpHandler {
+public class ProfileHandler implements HttpHandler {
     private final ObjectMapper objectMapper;
     private final RoleDAO roleDAO;
 
-    public DashboardHandler(ObjectMapper objectMapper, RoleDAO roleDAO) {
+    public ProfileHandler(ObjectMapper objectMapper, RoleDAO roleDAO) {
         this.objectMapper = objectMapper;
         this.roleDAO = roleDAO;
     }
@@ -26,9 +26,13 @@ public class DashboardHandler implements HttpHandler {
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
         exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
         if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
             exchange.sendResponseHeaders(204, -1);
+            return;
+        }
+
+        if(!"/profile".equals(exchange.getRequestURI().getPath())) {
+            exchange.sendResponseHeaders(404, -1);
             return;
         }
 
