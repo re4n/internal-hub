@@ -13,6 +13,10 @@ public class AppException extends RuntimeException {
         this.incidentId = java.util.UUID.randomUUID().toString().substring(0,8);
     }
 
+    public AppException(AppError errorType) {
+        this(errorType, null);
+    }
+
     public AppError getErrorType() {return errorType;}
 
     public String getIncidentId(){ return incidentId;}
