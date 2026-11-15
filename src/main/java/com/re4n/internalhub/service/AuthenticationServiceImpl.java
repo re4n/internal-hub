@@ -100,7 +100,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .getPayload();
             return Long.parseLong(claims.getSubject());
         }catch (JwtException | IllegalArgumentException e){
-            throw new AppException(AppError.INVALID_CREDENTIALS, e);
+            throw new AppException(AppError.UNAUTHENTICATED, e);
         }
     }
 

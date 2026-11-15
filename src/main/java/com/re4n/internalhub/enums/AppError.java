@@ -12,8 +12,8 @@ public enum AppError {
     FOREIGN_KEY_VIOLATION("IHBC-E203","The resource cannot be removed because it is in use.", 409),
 
     INVALID_CREDENTIALS("IHAC-E300", "Incorrect username or password.", 401),
-    AUTHORIZATION_DENIED("IHAC-E301", "Insufficient permissions to access the requested resource.", 403);
-
+    AUTHORIZATION_DENIED("IHAC-E301", "Insufficient permissions to access the requested resource.", 403),
+    UNAUTHENTICATED("IHAC-E302", "Authentication required.", 401);
 
     private final String code;
     private final String message;
