@@ -3,8 +3,6 @@
 A role-based access control (RBAC) system for 
 internal HR/identity management, built with pure Java and JDBC.
 
-> ⚠️ **Branch:** `feature/docker-setup` — Implemented containerized environment with Docker, multi-stage Maven builds, and native compatibility for cryptographic libraries (`libc6-compat` / Debian Jammy).
-
 ## About
 An HR access control system, built with pure JDBC to master the persistence layer that a framework like Spring abstracts away — featuring a native HTTP server architecture and full Docker containerization.
 ## Tech Stack & Dependencies
