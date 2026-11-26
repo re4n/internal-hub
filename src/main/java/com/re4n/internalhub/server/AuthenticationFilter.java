@@ -1,21 +1,23 @@
 package com.re4n.internalhub.server;
 import com.re4n.internalhub.dao.UserDAO;
+import com.re4n.internalhub.enums.AppError;
+import com.re4n.internalhub.exception.AppException;
 import com.re4n.internalhub.model.User;
 import com.re4n.internalhub.service.AuthenticationService;
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 
 public class AuthenticationFilter extends Filter {
     private final AuthenticationService authenticationService;
     private final UserDAO userDAO;
+    private final JsonResponder jsonResponder;
 
-    public AuthenticationFilter(AuthenticationService authenticationService, UserDAO userDAO) {
+    public AuthenticationFilter(AuthenticationService authenticationService, UserDAO userDAO,  JsonResponder jsonResponder) {
         this.authenticationService = authenticationService;
         this.userDAO = userDAO;
+        this.jsonResponder = jsonResponder;
     }
 
 
@@ -26,14 +28,14 @@ public class AuthenticationFilter extends Filter {
         exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
         if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
-            exchange.sendResponseHeaders(204, -1);
+            jsonResponder.sendEmpty(exchange, 204);
             return;
         }
 
         String authenticationHeader = exchange.getRequestHeaders().getFirst("Authorization");
 
         if(authenticationHeader == null ||!authenticationHeader.startsWith("Bearer ")) {
-            sendUnauthorized(exchange, "Unauthorized");
+            jsonResponder.sendError(exchange, new AppException(AppError.UNAUTHENTICATED));
             return;
         }
         String token = authenticationHeader.substring(7);
@@ -41,12 +43,18 @@ public class AuthenticationFilter extends Filter {
         try {
             Long userId = authenticationService.userIdExtractor(token);
             user = userDAO.findById(userId);
-        }catch(Exception e){
-            sendUnauthorized(exchange, "Unauthorized");
+        }catch (AppException e) {
+            jsonResponder.sendError(exchange, e);
+            return;
+        }catch (Exception e) {
+            AppException appException = new AppException(AppError.INTERNAL_ERROR, e);
+            System.err.println("Incident " + appException.getIncidentId());
+            e.printStackTrace();
+            jsonResponder.sendError(exchange, appException);
             return;
         }
         if(user == null || !Boolean.TRUE.equals(user.getActive())){
-            sendUnauthorized(exchange, "Unauthorized");
+            jsonResponder.sendError(exchange, new AppException(AppError.UNAUTHENTICATED));
             return;
         }
         exchange.setAttribute("authenticatedUser", user);
@@ -57,19 +65,6 @@ public class AuthenticationFilter extends Filter {
     @Override
     public String description() {
         return "JWT token validation filter and user context injection";
-    }
-
-    private void sendUnauthorized(HttpExchange exchange, String message) throws IOException{
-        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
-        exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
-
-        String jsonResponse = String.format("{\"code\":\"UNAUTHORIZED\",\"message\":\"%s\"}", message);
-        byte[] response = jsonResponse.getBytes(StandardCharsets.UTF_8);
-
-        exchange.sendResponseHeaders(401, response.length);
-        try(OutputStream outputStream = exchange.getResponseBody()){
-            outputStream.write(response);
-        }
     }
 }
 
