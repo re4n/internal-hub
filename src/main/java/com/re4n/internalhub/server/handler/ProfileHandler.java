@@ -1,24 +1,25 @@
 package com.re4n.internalhub.server.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.re4n.internalhub.dao.RoleDAO;
 import com.re4n.internalhub.dto.ProfileResult;
 import com.re4n.internalhub.dto.RoleResult;
+import com.re4n.internalhub.enums.AppError;
+import com.re4n.internalhub.exception.AppException;
 import com.re4n.internalhub.model.Role;
 import com.re4n.internalhub.model.User;
+import com.re4n.internalhub.server.JsonResponder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class ProfileHandler implements HttpHandler {
-    private final ObjectMapper objectMapper;
     private final RoleDAO roleDAO;
+    private final JsonResponder jsonResponder;
 
-    public ProfileHandler(ObjectMapper objectMapper, RoleDAO roleDAO) {
-        this.objectMapper = objectMapper;
+    public ProfileHandler(RoleDAO roleDAO,  JsonResponder jsonResponder) {
         this.roleDAO = roleDAO;
+        this.jsonResponder = jsonResponder;
     }
 
     @Override
@@ -27,23 +28,23 @@ public class ProfileHandler implements HttpHandler {
         exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
         exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization");
         if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
-            exchange.sendResponseHeaders(204, -1);
+            jsonResponder.sendEmpty(exchange, 204);
             return;
         }
 
         if(!"/profile".equals(exchange.getRequestURI().getPath())) {
-            exchange.sendResponseHeaders(404, -1);
+            jsonResponder.sendError(exchange, new AppException(AppError.RESOURCE_NOT_FOUND));
             return;
         }
 
         if(!"GET".equalsIgnoreCase(exchange.getRequestMethod())){
-            exchange.sendResponseHeaders(405, -1);
+            jsonResponder.sendEmpty(exchange, 405);
             return;
         }
 
         User user = (User) exchange.getAttribute("authenticatedUser");
         if(user == null){
-            exchange.sendResponseHeaders(401, -1);
+            jsonResponder.sendError(exchange, new AppException(AppError.UNAUTHENTICATED));
             return;
         }
         try{
@@ -60,25 +61,14 @@ public class ProfileHandler implements HttpHandler {
                     user.getCorporateEmail(),
                     roleResult
             );
-            byte[] body = objectMapper.writeValueAsBytes(responseData);
-            exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
-            exchange.sendResponseHeaders(200, body.length);
-            try(OutputStream os = exchange.getResponseBody()){
-                os.write(body);
-            }
+            jsonResponder.send(exchange, 200, responseData);
+        }catch (AppException e){
+            jsonResponder.sendError(exchange, e);
         }catch (Exception e){
+            AppException appException = new AppException(AppError.INTERNAL_ERROR, e);
+            System.err.println("Incident " + appException.getIncidentId());
             e.printStackTrace();
-            sendInternalError(exchange);
-        }
-    }
-
-    private void sendInternalError(HttpExchange exchange) throws IOException {
-        byte[] body = "{\"code\":\"INTERNAL_ERROR\",\"message\":\"Unexpected internal error.\"}"
-                .getBytes(java.nio.charset.StandardCharsets.UTF_8);
-        exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
-        exchange.sendResponseHeaders(500, body.length);
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(body);
+            jsonResponder.sendError(exchange, appException);
         }
     }
 }
