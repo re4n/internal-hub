@@ -29,9 +29,12 @@ public class HttpAppServer {
 
         objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
         objectMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        JsonResponder jsonResponder = new JsonResponder(objectMapper);
+
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
 
-        server.createContext("/auth/login", new AuthHandler(authenticationService, objectMapper));
+        server.createContext("/auth/login", new AuthHandler(authenticationService, objectMapper, jsonResponder));
         var profileContext = server.createContext("/profile", new ProfileHandler(objectMapper, roleDAO));
         profileContext.getFilters().add(new AuthenticationFilter(authenticationService, userDAO));
         server.setExecutor(null);
