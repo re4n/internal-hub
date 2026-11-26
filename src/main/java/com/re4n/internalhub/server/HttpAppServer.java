@@ -36,7 +36,7 @@ public class HttpAppServer {
 
         server.createContext("/auth/login", new AuthHandler(authenticationService, objectMapper, jsonResponder));
         var profileContext = server.createContext("/profile", new ProfileHandler(roleDAO, jsonResponder));
-        profileContext.getFilters().add(new AuthenticationFilter(authenticationService, userDAO));
+        profileContext.getFilters().add(new AuthenticationFilter(authenticationService, userDAO, jsonResponder));
         server.setExecutor(null);
         System.out.println("HTTP server running on: http://localhost:" + PORT);
         server.start();
